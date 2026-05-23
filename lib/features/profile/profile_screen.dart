@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import '../component/conests.dart';
+import '../../core/component/conests.dart';
+import '../../core/constants/app_constants.dart';
+import '../../core/utils/cache_helper.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -130,6 +132,9 @@ class ProfileScreen extends StatelessWidget {
                     'Personal Details',
                     'Edit account details & info',
                     kPrimaryColor,
+                    onTap: () {
+                      Navigator.pushNamed(context, '/edit-profile');
+                    },
                   ),
                   const Divider(color: kDividerColor, height: 1),
                   _buildSettingTile(
@@ -165,6 +170,14 @@ class ProfileScreen extends StatelessWidget {
                     'Sign Out',
                     'Safely log out of your session',
                     kGreyColor,
+                    onTap: () {
+                      CacheHelper.removeData(key: AppConstants.tokenKey).then((value) {
+                        if (value) {
+                          if (!context.mounted) return;
+                          Navigator.pushReplacementNamed(context, '/login');
+                        }
+                      });
+                    },
                   ),
                 ],
               ),
@@ -204,8 +217,9 @@ class ProfileScreen extends StatelessWidget {
     IconData icon,
     String title,
     String subtitle,
-    Color color,
-  ) {
+    Color color, {
+    void Function()? onTap,
+  }) {
     return ListTile(
       leading: CircleAvatar(
         radius: 18,
@@ -229,7 +243,7 @@ class ProfileScreen extends StatelessWidget {
         color: kGreyColor,
         size: 18,
       ),
-      onTap: () {},
+      onTap: onTap,
     );
   }
 }

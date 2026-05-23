@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../component/conests.dart';
+
+import '../../core/component/conests.dart';
 
 class SearchScreen extends StatelessWidget {
   const SearchScreen({super.key});

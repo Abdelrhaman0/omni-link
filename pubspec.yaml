@@ -41,6 +41,7 @@ dependencies:
   bloc:
   flutter_bloc:
   shared_preferences:
+  dio: ^5.9.2
 
 dev_dependencies:
   flutter_test:

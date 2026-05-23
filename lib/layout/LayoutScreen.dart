@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../component/conests.dart';
-import '../screens/search_screen.dart';
+import 'package:untitled6/core/component/conests.dart';
+import 'package:untitled6/features/favorites/wishlist_screen.dart';
+import '../features/search/search_screen.dart';
 import 'cubit/cubit-states.dart';
 import 'cubit/cubit.dart';
 
@@ -37,7 +38,7 @@ class ProjectLayout extends StatelessWidget {
                           Text(
                             cubit.title[cubit.currentIndex],
                             style: TextStyle(
-                              color: kPrimaryColor,
+                              color: kDarkColor,
                               fontWeight: FontWeight.bold,
                               fontSize: 22,
                             ),),
@@ -50,7 +51,14 @@ class ProjectLayout extends StatelessWidget {
                   actions: [
                     Row(
                       children: [
-                        IconButton(onPressed: (){}, icon: Icon(Icons.shopping_cart_outlined)),
+                        IconButton(onPressed: (){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const WishlistScreen(),
+                            ),
+                          );
+                        }, icon: Icon(Icons.favorite_outline_outlined)),
                         IconButton(
                           onPressed: () {
                             Navigator.push(
@@ -108,7 +116,7 @@ class ProjectLayout extends StatelessWidget {
                 items: [
                   BottomNavigationBarItem(
                     icon: Icon(Icons.home_filled),
-                    label: 'Main',
+                    label: 'Home',
                   ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.category_outlined),
@@ -118,7 +126,10 @@ class ProjectLayout extends StatelessWidget {
                     icon: Icon(Icons.devices),
                     label: 'Products',
                   ),
-
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.shopping_cart_outlined),
+                    label: 'Cart'
+                  ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.person_2_rounded),
                     label: 'Profile',

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import '../component/conests.dart';
+
+import '../../core/component/conests.dart';
+import '../../core/widgets/category_card.dart';
+import '../../models/category_model.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
@@ -101,20 +104,27 @@ class MainScreen extends StatelessWidget {
 
             // Networking categories horizontal list
             SizedBox(
-              height: 100,
-              child: ListView(
+              height: 96,
+              child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 physics: const BouncingScrollPhysics(),
-                children: [
-                  _buildCategoryItem(Icons.router_rounded, 'Routers', Colors.blue),
-                  _buildCategoryItem(Icons.hub_rounded, 'Switches', Colors.indigo),
-                  _buildCategoryItem(Icons.wifi_rounded, 'Wireless AP', Colors.teal),
-                  _buildCategoryItem(Icons.cable_rounded, 'Cabling', Colors.purple),
-                  _buildCategoryItem(Icons.developer_board_rounded, 'SFP & Optics', Colors.orange),
-                ],
+                itemCount: CategoryModel.mockCategories.length,
+                itemBuilder: (context, index) {
+                  final category = CategoryModel.mockCategories[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child: CategoryCard.compact(
+                      category: category,
+                      onTap: () {
+                        // Interactive tap handling can be wired up here if needed
+                      },
+                    ),
+                  );
+                },
               ),
             ),
             const SizedBox(height: 24),
+
 
             // 3. Section Header: Featured Networking Hardware
             Row(
@@ -208,39 +218,6 @@ class MainScreen extends StatelessWidget {
           ],
         ),
       ],
-    );
-  }
-
-  Widget _buildCategoryItem(IconData icon, String title, Color color) {
-    return Container(
-      width: 85,
-      margin: const EdgeInsets.only(right: 12),
-      decoration: BoxDecoration(
-        color: kCardColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: kDividerColor),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircleAvatar(
-            radius: 22,
-            backgroundColor: color.withOpacity(0.1),
-            child: Icon(icon, color: color, size: 24),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              color: kDarkColor,
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
     );
   }
 

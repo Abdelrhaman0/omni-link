@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../component/conests.dart';
+
+import '../../core/component/conests.dart';
 
 class ProductsScreen extends StatefulWidget {
   const ProductsScreen({super.key});
