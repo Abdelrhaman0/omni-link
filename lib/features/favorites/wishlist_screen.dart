@@ -1,25 +1,9 @@
 import 'package:flutter/material.dart';
+
 import '../../core/component/conests.dart';
-
-class WishlistItem {
-  final String id;
-  final String name;
-  final String category;
-  final double price;
-  final double oldPrice;
-  final String image;
-  final double rating;
-
-  WishlistItem({
-    required this.id,
-    required this.name,
-    required this.category,
-    required this.price,
-    required this.oldPrice,
-    required this.image,
-    required this.rating,
-  });
-}
+import '../../core/widgets/product_widget.dart';
+import '../../models/product_model.dart';
+import '../products/product_details_screen.dart';
 
 class WishlistScreen extends StatefulWidget {
   const WishlistScreen({super.key});
@@ -29,40 +13,19 @@ class WishlistScreen extends StatefulWidget {
 }
 
 class _WishlistScreenState extends State<WishlistScreen> {
-  final List<WishlistItem> _wishlistItems = [
-    WishlistItem(
-      id: 'cisco_switch',
-      name: 'Cisco Catalyst 9300 24-Port Switch',
-      category: 'Switches',
-      price: 15999.00,
-      oldPrice: 18500.00,
-      image: 'https://cdn-icons-png.flaticon.com/512/3208/3208726.png',
-      rating: 4.8,
-    ),
-    WishlistItem(
-      id: 'mikrotik_router',
-      name: 'MikroTik CCR2004-16G-2S+ Cloud Router',
-      category: 'Routers',
-      price: 8499.00,
-      oldPrice: 9200.00,
-      image: 'https://cdn-icons-png.flaticon.com/512/1000/1000854.png',
-      rating: 4.6,
-    ),
-    WishlistItem(
-      id: 'ubiquiti_ap',
-      name: 'Ubiquiti UniFi AC Pro Access Point',
-      category: 'Wireless AP',
-      price: 4199.00,
-      oldPrice: 4800.00,
-      image: 'https://cdn-icons-png.flaticon.com/512/2888/2888691.png',
-      rating: 4.9,
-    ),
-  ];
+  // Grab the favorite items from mockProducts to act as the initial wishlist database
+  late final List<ProductModel> _wishlistProducts;
+
+  @override
+  void initState() {
+    super.initState();
+    _wishlistProducts = ProductModel.mockProducts.where((p) => p.isFavorite).toList();
+  }
 
   void _removeItem(int index) {
-    final item = _wishlistItems[index];
+    final item = _wishlistProducts[index];
     setState(() {
-      _wishlistItems.removeAt(index);
+      _wishlistProducts.removeAt(index);
     });
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -72,7 +35,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
           textColor: kAccentColor,
           onPressed: () {
             setState(() {
-              _wishlistItems.insert(index, item);
+              _wishlistProducts.insert(index, item);
             });
           },
         ),
@@ -82,7 +45,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
     );
   }
 
-  void _addToCart(WishlistItem item) {
+  void _addToCart(ProductModel item) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
@@ -116,7 +79,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: _wishlistItems.isEmpty ? _buildEmptyState() : _buildWishlistList(),
+      body: _wishlistProducts.isEmpty ? _buildEmptyState() : _buildWishlistList(),
     );
   }
 
@@ -187,137 +150,28 @@ class _WishlistScreenState extends State<WishlistScreen> {
     return ListView.builder(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.all(16),
-      itemCount: _wishlistItems.length,
+      itemCount: _wishlistProducts.length,
       itemBuilder: (context, index) {
-        final item = _wishlistItems[index];
-        return Card(
-          margin: const EdgeInsets.only(bottom: 16),
-          color: Colors.white,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-            side: const BorderSide(color: kDividerColor),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Row(
-              children: [
-                // Product Image
-                Container(
-                  width: 90,
-                  height: 90,
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: kLightColor,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Image.network(
-                    item.image,
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) {
-                      return const Icon(Icons.developer_board_rounded, color: kGreyColor, size: 32);
-                    },
-                  ),
-                ),
-                const SizedBox(width: 14),
+        final product = _wishlistProducts[index];
+        // Ensure favorite visual representation remains true on WishlistScreen
+        final displayProduct = product.copyWith(isFavorite: true);
 
-                // Product Details
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: kPrimaryColor.withValues(alpha: 0.08),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text(
-                          item.category,
-                          style: const TextStyle(
-                            color: kPrimaryColor,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        item.name,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: kDarkColor,
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                          height: 1.2,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Row(
-                        children: [
-                          const Icon(Icons.star_rounded, color: kAccentColor, size: 14),
-                          const SizedBox(width: 2),
-                          Text(
-                            '${item.rating}',
-                            style: const TextStyle(
-                              color: kDarkColor,
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        textBaseline: TextBaseline.alphabetic,
-                        crossAxisAlignment: CrossAxisAlignment.baseline,
-                        children: [
-                          Text(
-                            '${item.price.toStringAsFixed(0)} EGP',
-                            style: const TextStyle(
-                              color: kPrimaryColor,
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            '${item.oldPrice.toStringAsFixed(0)} EGP',
-                            style: const TextStyle(
-                              color: kGreyColor,
-                              fontSize: 11,
-                              decoration: TextDecoration.lineThrough,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 16.0),
+          child: ProductCard.list(
+            product: displayProduct,
+            actionLabel: 'Add to Cart',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      ProductDetailsScreen(product: displayProduct),
                 ),
-
-                // Actions (Add to Cart / Delete)
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 20),
-                      onPressed: () => _removeItem(index),
-                    ),
-                    const SizedBox(height: 12),
-                    IconButton(
-                      style: IconButton.styleFrom(
-                        backgroundColor: kPrimaryColor,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.all(8),
-                      ),
-                      icon: const Icon(Icons.add_shopping_cart_rounded, size: 18),
-                      onPressed: () => _addToCart(item),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+              );
+            },
+            onFavoritePressed: () => _removeItem(index),
+            onActionPressed: () => _addToCart(product),
           ),
         );
       },

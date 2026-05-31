@@ -17,6 +17,24 @@ class CategoryModel {
     required this.color,
   });
 
+  CategoryModel copyWith({
+    String? id,
+    String? name,
+    String? shortName,
+    int? productCount,
+    IconData? icon,
+    Color? color,
+  }) {
+    return CategoryModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      shortName: shortName ?? this.shortName,
+      productCount: productCount ?? this.productCount,
+      icon: icon ?? this.icon,
+      color: color ?? this.color,
+    );
+  }
+
   factory CategoryModel.fromJson(Map<String, dynamic> json) {
     return CategoryModel(
       id: json['id'] as String,
@@ -81,14 +99,7 @@ class CategoryModel {
           icon: Icons.inventory_2_rounded,
           color: Colors.blueGrey,
         ),
-        CategoryModel(
-          id: 'sfp_optics',
-          name: 'SFP & Optic Modules',
-          shortName: 'SFP & Optics',
-          productCount: 196,
-          icon: Icons.developer_board_rounded,
-          color: Colors.orange,
-        ),
+
         CategoryModel(
           id: 'poe_power',
           name: 'PoE & Power Delivery',

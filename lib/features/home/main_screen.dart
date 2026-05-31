@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../../core/component/conests.dart';
 import '../../core/widgets/category_card.dart';
+import '../../core/widgets/product_widget.dart';
+import '../../core/widgets/brand_card.dart';
 import '../../models/category_model.dart';
+import '../../models/product_model.dart';
+import '../../models/brand_model.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
@@ -29,7 +33,7 @@ class MainScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: kPrimaryColor.withOpacity(0.3),
+                    color: kPrimaryColor.withOpacity(0.2),
                     blurRadius: 12,
                     offset: const Offset(0, 6),
                   ),
@@ -66,7 +70,7 @@ class MainScreen extends StatelessWidget {
                       ),
                       CircleAvatar(
                         radius: 26,
-                        backgroundColor: Colors.white24,
+                        backgroundColor: Colors.white.withOpacity(0.15),
                         child: const Icon(
                           Icons.dns_rounded,
                           color: Colors.white,
@@ -125,8 +129,41 @@ class MainScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
 
+            // New Section: Top Hardware Brands
+            const Text(
+              'Top Brands',
+              style: TextStyle(
+                color: kDarkColor,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 12),
 
-            // 3. Section Header: Featured Networking Hardware
+            // Horizontal Brands list using our new BrandCard
+            SizedBox(
+              height: 48,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                itemCount: BrandModel.mockBrands.length,
+                itemBuilder: (context, index) {
+                  final brand = BrandModel.mockBrands[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child: BrandCard.compact(
+                      brand: brand,
+                      onTap: () {
+                        // Interactive brand selection
+                      },
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // 3. Section Header: Featured Enterprise Hardware
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -149,44 +186,33 @@ class MainScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
 
-            // Grid of products (focused on network equipment)
-            GridView.count(
-              crossAxisCount: 2,
+            // Grid of products (focused on network equipment) using our beautiful ProductCard
+            GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              childAspectRatio: 0.68,
-              children: [
-                _buildProductCard(
-                  'UniFi U6 Pro Access Point',
-                  '\$149.00',
-                  '4.9',
-                  Icons.wifi_tethering_rounded,
-                  Colors.blue,
-                ),
-                _buildProductCard(
-                  'MikroTik CCR2004 Router',
-                  '\$495.00',
-                  '4.8',
-                  Icons.router_rounded,
-                  Colors.blueGrey,
-                ),
-                _buildProductCard(
-                  'Cisco Catalyst 9300 Switch',
-                  '\$2,499.00',
-                  '5.0',
-                  Icons.hub_rounded,
-                  Colors.indigo,
-                ),
-                _buildProductCard(
-                  '10G SFP+ SR Module',
-                  '\$29.99',
-                  '4.7',
-                  Icons.developer_board_rounded,
-                  Colors.orange,
-                ),
-              ],
+              itemCount: ProductModel.mockProducts.take(4).length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                childAspectRatio: 0.65,
+              ),
+              itemBuilder: (context, index) {
+                final product = ProductModel.mockProducts[index];
+                return ProductCard.grid(
+                  product: product,
+                  actionLabel: 'Add to Quote',
+                  onTap: () {
+                    // Navigate to product details
+                  },
+                  onFavoritePressed: () {
+                    // Toggle favorite in Bloc later
+                  },
+                  onActionPressed: () {
+                    // Add to Quote in Bloc later
+                  },
+                );
+              },
             ),
             const SizedBox(height: 20),
           ],
@@ -218,117 +244,6 @@ class MainScreen extends StatelessWidget {
           ],
         ),
       ],
-    );
-  }
-
-  Widget _buildProductCard(
-      String name, String price, String rating, IconData icon, Color bgIconColor) {
-    return Container(
-      decoration: BoxDecoration(
-        color: kCardColor,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: kDividerColor),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Product Image Placeholder
-          Expanded(
-            child: Container(
-              margin: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: kLightColor,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Center(
-                child: Icon(
-                  icon,
-                  size: 48,
-                  color: bgIconColor,
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: kDarkColor,
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      price,
-                      style: const TextStyle(
-                        color: kPrimaryColor,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        const Icon(Icons.star, color: kAccentColor, size: 14),
-                        const SizedBox(width: 2),
-                        Text(
-                          rating,
-                          style: const TextStyle(
-                            color: kGreyColor,
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 10),
-          Container(
-            width: double.infinity,
-            margin: const EdgeInsets.only(left: 12, right: 12, bottom: 12),
-            height: 36,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: kPrimaryColor,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                padding: EdgeInsets.zero,
-              ),
-              onPressed: () {},
-              child: const Text(
-                'Add to Quote',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

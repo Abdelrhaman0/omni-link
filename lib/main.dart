@@ -12,6 +12,9 @@ import 'features/membership/membership_screen.dart';
 import 'features/profile/edit_profile_screen.dart';
 import 'layout/LayoutScreen.dart';
 import 'layout/cubit/cubit.dart';
+import 'features/products/data/datasource/products_remote_data_source.dart';
+import 'features/products/data/repositories/products_repository.dart';
+import 'features/products/presentation/manager/products_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,6 +37,13 @@ class MyApp extends StatelessWidget {
           create: (context) => AuthCubit(
             authRepository: AuthRepository(
               remoteDataSource: AuthRemoteDataSourceImpl(),
+            ),
+          ),
+        ),
+        BlocProvider(
+          create: (context) => ProductsCubit(
+            ProductsRepository(
+              remoteDataSource: ProductsRemoteDataSourceImpl(),
             ),
           ),
         ),

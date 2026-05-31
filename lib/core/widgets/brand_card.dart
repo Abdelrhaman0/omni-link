@@ -1,53 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:untitled6/core/component/conests.dart';
-import 'package:untitled6/models/category_model.dart';
+import 'package:untitled6/models/brand_model.dart';
 
-enum CategoryCardType {
+enum BrandCardType {
   grid,
   compact,
 }
 
-class CategoryCard extends StatefulWidget {
-  final CategoryModel? category; // Null when loading/shimmer
-  final CategoryCardType type;
+class BrandCard extends StatefulWidget {
+  final BrandModel? brand; // Null when loading/shimmer
+  final BrandCardType type;
   final bool isSelected;
   final VoidCallback? onTap;
 
-  const CategoryCard({
+  const BrandCard({
     super.key,
-    required this.category,
-    this.type = CategoryCardType.grid,
+    required this.brand,
+    this.type = BrandCardType.grid,
     this.isSelected = false,
     this.onTap,
   });
 
-  const CategoryCard.grid({
+  const BrandCard.grid({
     super.key,
-    required this.category,
+    required this.brand,
     this.isSelected = false,
     this.onTap,
-  }) : type = CategoryCardType.grid;
+  }) : type = BrandCardType.grid;
 
-  const CategoryCard.compact({
+  const BrandCard.compact({
     super.key,
-    required this.category,
+    required this.brand,
     this.isSelected = false,
     this.onTap,
-  }) : type = CategoryCardType.compact;
+  }) : type = BrandCardType.compact;
 
   // Shimmer Named Constructors
   static Widget shimmer({
     Key? key,
-    CategoryCardType type = CategoryCardType.grid,
+    BrandCardType type = BrandCardType.grid,
   }) {
-    return _CategoryCardShimmer(type: type, key: key);
+    return _BrandCardShimmer(type: type, key: key);
   }
 
   @override
-  State<CategoryCard> createState() => _CategoryCardState();
+  State<BrandCard> createState() => _BrandCardState();
 }
 
-class _CategoryCardState extends State<CategoryCard> with SingleTickerProviderStateMixin {
+class _BrandCardState extends State<BrandCard> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
   bool _isHovered = false;
@@ -59,7 +59,7 @@ class _CategoryCardState extends State<CategoryCard> with SingleTickerProviderSt
       vsync: this,
       duration: const Duration(milliseconds: 100),
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.96).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
   }
@@ -72,8 +72,8 @@ class _CategoryCardState extends State<CategoryCard> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
-    if (widget.category == null) {
-      return CategoryCard.shimmer(type: widget.type);
+    if (widget.brand == null) {
+      return BrandCard.shimmer(type: widget.type);
     }
 
     return MouseRegion(
@@ -91,7 +91,7 @@ class _CategoryCardState extends State<CategoryCard> with SingleTickerProviderSt
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
             curve: Curves.easeInOut,
-            child: widget.type == CategoryCardType.grid
+            child: widget.type == BrandCardType.grid
                 ? _buildGridCard()
                 : _buildCompactCard(),
           ),
@@ -101,26 +101,28 @@ class _CategoryCardState extends State<CategoryCard> with SingleTickerProviderSt
   }
 
   Widget _buildGridCard() {
-    final category = widget.category!;
+    final brand = widget.brand!;
+    final Color brandColor = brand.color;
+
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: widget.isSelected
-            ? category.color.withValues(alpha: 0.05)
+            ? brandColor.withValues(alpha: 0.04)
             : kCardColor,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: widget.isSelected
-              ? category.color
+              ? brandColor
               : _isHovered
-                  ? category.color.withValues(alpha: 0.5)
+                  ? brandColor.withValues(alpha: 0.5)
                   : kDividerColor,
           width: widget.isSelected ? 2.0 : 1.0,
         ),
         boxShadow: [
           BoxShadow(
             color: widget.isSelected
-                ? category.color.withValues(alpha: 0.1)
+                ? brandColor.withValues(alpha: 0.08)
                 : _isHovered
                     ? Colors.black.withValues(alpha: 0.06)
                     : Colors.black.withValues(alpha: 0.02),
@@ -130,57 +132,42 @@ class _CategoryCardState extends State<CategoryCard> with SingleTickerProviderSt
         ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: category.color.withValues(alpha: 0.12),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  category.icon,
-                  color: category.color,
-                  size: 20,
-                ),
-              ),
-              Icon(
-                Icons.arrow_forward_ios_rounded,
-                color: widget.isSelected ? category.color : kGreyColor,
-                size: 12,
-              ),
-            ],
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: brandColor.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              brand.icon ?? Icons.business_rounded,
+              color: brandColor,
+              size: 32,
+            ),
           ),
           const SizedBox(height: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                category.name,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: kDarkColor,
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  height: 1.2,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                '${category.productCount} Products',
-                style: const TextStyle(
-                  color: kGreyColor,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
+          Text(
+            brand.name,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: kDarkColor,
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '${brand.productCount} Products',
+            style: const TextStyle(
+              color: kGreyColor,
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),
@@ -188,58 +175,56 @@ class _CategoryCardState extends State<CategoryCard> with SingleTickerProviderSt
   }
 
   Widget _buildCompactCard() {
-    final category = widget.category!;
+    final brand = widget.brand!;
+    final Color brandColor = brand.color;
+
     return Container(
-      width: 85,
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
         color: widget.isSelected
-            ? category.color.withValues(alpha: 0.08)
+            ? brandColor.withValues(alpha: 0.08)
             : kCardColor,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: widget.isSelected
-              ? category.color
+              ? brandColor
               : _isHovered
-                  ? category.color.withValues(alpha: 0.4)
+                  ? brandColor.withValues(alpha: 0.5)
                   : kDividerColor,
           width: widget.isSelected ? 1.5 : 1.0,
         ),
         boxShadow: [
           if (_isHovered || widget.isSelected)
             BoxShadow(
-              color: category.color.withValues(alpha: 0.05),
+              color: brandColor.withValues(alpha: 0.05),
               blurRadius: 6,
               offset: const Offset(0, 3),
             ),
         ],
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            padding: const EdgeInsets.all(8),
+          Container(
+            padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: category.color.withValues(alpha: 0.1),
+              color: brandColor.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
-              category.icon,
-              color: category.color,
-              size: 24,
+              brand.icon ?? Icons.business_rounded,
+              color: brandColor,
+              size: 16,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(width: 8),
           Text(
-            category.shortName ?? category.name,
+            brand.name,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
             style: TextStyle(
-              color: widget.isSelected ? category.color : kDarkColor,
-              fontSize: 11,
+              color: widget.isSelected ? brandColor : kDarkColor,
+              fontSize: 12,
               fontWeight: widget.isSelected ? FontWeight.bold : FontWeight.w600,
             ),
           ),
@@ -249,17 +234,17 @@ class _CategoryCardState extends State<CategoryCard> with SingleTickerProviderSt
   }
 }
 
-// Private Shimmer Loading UI helper class for Category
-class _CategoryCardShimmer extends StatefulWidget {
-  final CategoryCardType type;
+// Private Shimmer Loading UI helper class
+class _BrandCardShimmer extends StatefulWidget {
+  final BrandCardType type;
 
-  const _CategoryCardShimmer({super.key, required this.type});
+  const _BrandCardShimmer({super.key, required this.type});
 
   @override
-  State<_CategoryCardShimmer> createState() => _CategoryCardShimmerState();
+  State<_BrandCardShimmer> createState() => _BrandCardShimmerState();
 }
 
-class _CategoryCardShimmerState extends State<_CategoryCardShimmer>
+class _BrandCardShimmerState extends State<_BrandCardShimmer>
     with SingleTickerProviderStateMixin {
   late AnimationController _shimmerController;
   late Animation<double> _shimmerAnimation;
@@ -287,7 +272,7 @@ class _CategoryCardShimmerState extends State<_CategoryCardShimmer>
     return AnimatedBuilder(
       animation: _shimmerAnimation,
       builder: (context, child) {
-        return widget.type == CategoryCardType.grid
+        return widget.type == BrandCardType.grid
             ? _buildGridShimmer()
             : _buildCompactShimmer();
       },
@@ -296,32 +281,21 @@ class _CategoryCardShimmerState extends State<_CategoryCardShimmer>
 
   Widget _buildGridShimmer() {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: kCardColor,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: kDividerColor),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _shimmerCircle(32),
-              _shimmerBar(width: 12, height: 12),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _shimmerBar(width: 80, height: 12),
-              const SizedBox(height: 6),
-              _shimmerBar(width: 50, height: 8),
-            ],
-          ),
+          _shimmerCircle(48),
+          const SizedBox(height: 12),
+          _shimmerBar(width: 80, height: 12),
+          const SizedBox(height: 6),
+          _shimmerBar(width: 50, height: 8),
         ],
       ),
     );
@@ -329,20 +303,18 @@ class _CategoryCardShimmerState extends State<_CategoryCardShimmer>
 
   Widget _buildCompactShimmer() {
     return Container(
-      width: 85,
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
         color: kCardColor,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: kDividerColor),
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _shimmerCircle(40),
-          const SizedBox(height: 8),
-          _shimmerBar(width: 50, height: 10),
+          _shimmerCircle(24),
+          const SizedBox(width: 8),
+          _shimmerBar(width: 60, height: 10),
         ],
       ),
     );
